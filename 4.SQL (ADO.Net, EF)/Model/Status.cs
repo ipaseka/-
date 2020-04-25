@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace _4.SQL__ADO.Net__EF_
+namespace _4.SQL__ADO.Net__EF_.Model
 {
     using System;
     using System.Collections.Generic;

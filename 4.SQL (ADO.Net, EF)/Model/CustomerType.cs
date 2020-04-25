@@ -7,25 +7,23 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace _4.SQL__ADO.Net__EF_
+namespace _4.SQL__ADO.Net__EF_.Model
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class Seller
+    public partial class CustomerType
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Seller()
+        public CustomerType()
         {
-            this.Contract = new HashSet<Contract>();
+            this.Customer = new HashSet<Customer>();
         }
     
         public int Id { get; set; }
-        public string Surname { get; set; }
         public string Name { get; set; }
-        public string FatherName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Contract> Contract { get; set; }
+        public virtual ICollection<Customer> Customer { get; set; }
     }
 }
