@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="4953f21a200940f9975c2e501112c238" Name="Diagram1">
+        <EntityTypeShape EntityType="DotNetTestBaseModel.Contract" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="DotNetTestBaseModel.Customer" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="DotNetTestBaseModel.CustomerType" Width="1.5" PointX="0.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DotNetTestBaseModel.Seller" Width="1.5" PointX="3" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DotNetTestBaseModel.Status" Width="1.5" PointX="5.25" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DotNetTestBaseModel.StatusHistory" Width="1.5" PointX="7.5" PointY="1.625" IsExpanded="true" />
+        <AssociationConnector Association="DotNetTestBaseModel.FK__Contract__Custom__7D439ABD" ManuallyRouted="false" />
+        <AssociationConnector Association="DotNetTestBaseModel.FK__Contract__Seller__7E37BEF6" ManuallyRouted="false" />
+        <AssociationConnector Association="DotNetTestBaseModel.FK__StatusHis__Contr__02FC7413" ManuallyRouted="false" />
+        <AssociationConnector Association="DotNetTestBaseModel.FK__Customer__TypeId__6FE99F9F" ManuallyRouted="false" />
+        <AssociationConnector Association="DotNetTestBaseModel.FK__StatusHis__Statu__02084FDA" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
