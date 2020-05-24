@@ -1,9 +1,10 @@
-﻿using Microsoft.VisualBasic;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Custom_Log_Parser.core
@@ -19,15 +20,20 @@ namespace Custom_Log_Parser.core
                 throw new ArgumentException("File path should be qualified");
             this.FilePath = filePath;
         }
-        public async Task ParseIntoAsync(Collection<LogItem> collection, ProgressControl progressControl)
+        public async Task<List<LogItem>> ParseAsync(ProgressControl progressControl)
         {
-            progressControl.Init(File.ReadAllLines(FilePath).Length);
-            collection.Clear();
+            var sw = new Stopwatch();
+            sw.Start();
+            
+            var lineLength = File.ReadAllLines(FilePath).Length;
+            LogItem[] tmpArr = new LogItem[lineLength];
+            progressControl.Init(lineLength);
 
             using FileStream fs = File.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             using BufferedStream bs = new BufferedStream(fs);
             using StreamReader sr = new StreamReader(bs);
             string line;
+            int count = 0;
             while ((line = await sr.ReadLineAsync()) != null)
             {
                 progressControl.SetProgressState(1);
@@ -36,12 +42,16 @@ namespace Custom_Log_Parser.core
                     continue;
                 if (!line.Contains("ApiPZU.Logging.LogManager"))
                 {
-                    if (collection.Count() > 0)
-                        collection.Last().Content += Environment.NewLine + line;
+                    if (count > 0)
+                        tmpArr[count - 1].Content += Environment.NewLine + line;
                     continue;
                 }
-                collection.Add(new LogItem(line));
+                tmpArr[count] = new LogItem(line);
+                count++;
             }
+            sw.Stop();
+            Debug.WriteLine($"ParseIntoAsync time {sw.Elapsed}");
+            return tmpArr[..count].ToList();
         }
         public static FileControl FromDialog()
         {
