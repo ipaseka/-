@@ -21,13 +21,15 @@ namespace Custom_Log_Parser
     public partial class MainWindow : Window
     {
         public List<LogItem> ItemList { get; }
-        public ObservableCollection<string> LogTypeList { get; }        
+        public ObservableCollection<string> LogTypeList { get; }
         private readonly ProgressControl progressControl;
         private FileControl fileControl;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             progressControl = new ProgressControl(PbProgress, TbProgress);
             ItemList = new List<LogItem>();
@@ -113,6 +115,21 @@ namespace Custom_Log_Parser
         private void LbLogType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CollectionViewSource.GetDefaultView(listLogs.ItemsSource).Refresh();
+        }
+        private void CbGroupOn_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count != 1)
+                return;
+            string groupOn = (string)(e.AddedItems[0] as ListBoxItem).Content;
+            
+            if (TryFindResource("CvsList") is CollectionViewSource CvsList)
+            {
+                CvsList?.View?.GroupDescriptions?.Clear();
+
+                if (groupOn.ToLower().Equals("none"))
+                    return;
+                CvsList?.View?.GroupDescriptions?.Add(new PropertyGroupDescription(groupOn));
+            }
         }
     }
 }

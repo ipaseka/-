@@ -3,13 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-        xmlns:dat="clr-namespace:System.Windows.Data;assembly=PresentationFramework"
-        xmlns:local="clr-namespace:Custom_Log_Parser" xmlns:core="clr-namespace:Custom_Log_Parser.core"
         mc:Ignorable="d"
-        Title="Custom Log Parser" Height="450" Width="854">
+        Title="Custom Log Parser" Height="600" Width="800" ShowInTaskbar="False" WindowStartupLocation="CenterScreen">
     <Window.Resources>
-        <CollectionViewSource Source="{Binding Path=ItemList, IsAsync=True}" x:Key="CvsList" x:Name="CvsList" />
+        <CollectionViewSource Source="{Binding Path=ItemList, IsAsync=True}" x:Key="CvsList" x:Name="CvsList">
+            <!--<CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="CommandType"/>
+            </CollectionViewSource.GroupDescriptions>-->
+        </CollectionViewSource>
     </Window.Resources>
     <DockPanel Margin="10">
         <Grid DockPanel.Dock="Top">
@@ -18,7 +19,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" x:Name="BtnSelectPath" Content="SelectPath" Click="BtnSelectPath_Click" Margin="0,5,5,5"/>
+            <Button Grid.Column="0" x:Name="BtnSelectPath" Content="Select Path" Click="BtnSelectPath_Click" Margin="0,5,5,5"/>
             <TextBox Grid.Column="1" x:Name="TbPath" Margin="5"/>
             <Button Grid.Column="2" x:Name="BtnParse" Content="Parse" Click="BtnParse_Click" Margin="5,5,0,5"/>
         </Grid>
@@ -30,44 +31,90 @@
             <TextBlock Grid.Column="0" Text="0 / 0" HorizontalAlignment="Center" x:Name="TbProgress" Margin="0,0,5,0"/>
             <ProgressBar Grid.Column="1" x:Name="PbProgress"/>
         </Grid>
-        <ListBox DockPanel.Dock="Top" ItemsSource="{Binding Path=LogTypeList}" SelectedIndex="0" SelectionMode="Single"
-                 Name="LbLogType" SelectionChanged="LbLogType_SelectionChanged" Height="25" Margin="0,5,0,5" HorizontalAlignment="Stretch">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-        </ListBox>
+        <Grid DockPanel.Dock="Top" Background="AliceBlue">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Type Filter:" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold"/>
+            <ListBox Grid.Column="1" ItemsSource="{Binding Path=LogTypeList}" SelectedIndex="0" SelectionMode="Single"
+                     Name="LbLogType" SelectionChanged="LbLogType_SelectionChanged" Height="25" Margin="0,5,0,5" HorizontalAlignment="Stretch">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+            <Label Grid.Column="2" Content="Filter Data Count:" VerticalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock Grid.Column="3" Text="{Binding ElementName=listLogs, Path=Items.Count}" VerticalAlignment="Center"/>
+            <Label Grid.Column="4" Content="Group On:" VerticalAlignment="Center" FontWeight="Bold"/>
+            <ComboBox x:Name="CbGroupOn" Grid.Column="5" SelectedIndex="0" Height="25" SelectionChanged="CbGroupOn_SelectionChanged">
+                <ComboBox.ItemsSource>
+                    <CompositeCollection>
+                        <ListBoxItem>None</ListBoxItem>
+                        <ListBoxItem>Command</ListBoxItem>
+                        <ListBoxItem>CommandType</ListBoxItem>
+                    </CompositeCollection>
+                </ComboBox.ItemsSource>
+            </ComboBox>
+        </Grid>
         <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <ListBox Grid.Row="0" x:Name="listLogs" ScrollViewer.CanContentScroll="True" Background="#FFC1BEFF" SelectionMode="Single"
-                     ItemsSource="{Binding Source={StaticResource CvsList}, IsAsync=True}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="180"/>
-                                <ColumnDefinition Width="200"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Group}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Text="{Binding Type}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="2" Text="{Binding Date}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="{Binding Command}"/>
-                            <TextBlock Grid.Column="4" Text="{Binding CommandType}"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <TextBox Grid.Row="1" x:Name="tbItemInfo" Background="#FFFCFFB9" IsReadOnly="True" TextWrapping="Wrap"
+            </Grid.ColumnDefinitions> 
+            <DataGrid Grid.Row="0" x:Name="listLogs" ScrollViewer.CanContentScroll="True" Background="#FFE0E0FD" SelectionMode="Single" RowBackground="#FFE0E0FD"
+                     ItemsSource="{Binding Source={StaticResource CvsList}, IsAsync=True}" IsReadOnly="True" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Group}" Width="45" Header="Group"/>
+                    <DataGridTextColumn Binding="{Binding Type}" Width="50" Header="Type"/>
+                    <DataGridTextColumn Binding="{Binding Date}" Width="180" Header="Date"/>
+                    <DataGridTextColumn Binding="{Binding Command}" Width="200" Header="Command"/>
+                    <DataGridTextColumn Binding="{Binding CommandType}" Width="*" Header="CommandType"/>
+                </DataGrid.Columns>
+                <DataGrid.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.Panel>
+                            <ItemsPanelTemplate>
+                                <DataGridRowsPresenter/>
+                            </ItemsPanelTemplate>
+                        </GroupStyle.Panel>
+                        <GroupStyle.ContainerStyle>
+                            <Style TargetType="{x:Type GroupItem}">
+                                <Setter Property="Margin" Value="5,5,5,5"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                                            <Expander IsExpanded="False" Background="#FF9CA9F9">
+                                                <Expander.Header>
+                                                    <DockPanel LastChildFill="True">
+                                                        <TextBlock FontWeight="Bold" Text="{Binding Path=ItemCount}"/>
+                                                        <Separator/>
+                                                        <TextBlock FontWeight="Bold" Text="{Binding Path=Name}" Margin="5,0,0,0"/>
+                                                    </DockPanel>
+                                                </Expander.Header>
+                                                <Expander.Content>
+                                                    <ItemsPresenter />
+                                                </Expander.Content>
+                                            </Expander>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GroupStyle.ContainerStyle>
+                    </GroupStyle>
+                </DataGrid.GroupStyle>
+            </DataGrid>
+            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ResizeDirection="Rows" />
+            <TextBox Grid.Row="2" x:Name="tbItemInfo" Background="#FFFCFFB9" IsReadOnly="True" TextWrapping="Wrap"
                      Text="{Binding ElementName=listLogs, Path=SelectedItem.Content, TargetNullValue=''}" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
         </Grid>
     </DockPanel>

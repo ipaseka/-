@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -31,7 +32,7 @@ namespace Custom_Log_Parser.core
 
             using FileStream fs = File.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             using BufferedStream bs = new BufferedStream(fs);
-            using StreamReader sr = new StreamReader(bs);
+            using StreamReader sr = new StreamReader(bs, Encoding.GetEncoding(1251));
             string line;
             int count = 0;
             while ((line = await sr.ReadLineAsync()) != null)
@@ -40,6 +41,7 @@ namespace Custom_Log_Parser.core
 
                 if (line.EndsWith("-----"))
                     continue;
+
                 if (!line.Contains("ApiPZU.Logging.LogManager"))
                 {
                     if (count > 0)

@@ -5,19 +5,20 @@ namespace Custom_Log_Parser.core
 {
     public class LogItem
     {
-        private static readonly string PATTERN = @"(.+)\s\[(.+)\]\s+(\w+).+-\s([\w]+)[^\w]*([\w]+)[^{]+(.+)";
+        private static readonly string PATTERN = @"(.+)\s\[(.+)\]\s+(\w+).+LogManager\s-\s([\w]+)[^\w]*([\w]+)[^{]+";
         private static readonly string PATTERN_ERROR = @"Exception thrown in ([^:]+):([^:]+)";
-        private static readonly string PATTERN_SIGN = @",?""DigitalSignature"":""([^""]+)""";
+        private static readonly string PATTERN_ERROR_SIGN = @"Creating\sa\ssignature\sfor\s([^:]+).+ErrorMessage"":""(.+)""";
+        private static readonly string PATTERN_SIGN_REMOVE = @",?""DigitalSignature"":""([^""]+)""";
         private static readonly Regex regex = new Regex(PATTERN, RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex regexError = new Regex(PATTERN_ERROR, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex regexSign = new Regex(PATTERN_SIGN, RegexOptions.Compiled);
+        private static readonly Regex regexErrorSign = new Regex(PATTERN_ERROR_SIGN, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex regexSignRemove = new Regex(PATTERN_SIGN_REMOVE, RegexOptions.Compiled);
         public string Content { get; set; }
         public string Date { get; private set; }
         public string Type { get; private set; }
         public string Group { get; private set; }
         public string Command { get; private set; }
         public string CommandType { get; private set; }
-        public string RestContent { get; private set; }
 
         public LogItem(string content)
         {
@@ -25,7 +26,7 @@ namespace Custom_Log_Parser.core
         }
         public void Parse()
         {
-            Content = regexSign.Replace(Content, String.Empty);
+            Content = regexSignRemove.Replace(Content, String.Empty);
 
             var matches = regex.Match(Content);
 
@@ -39,11 +40,17 @@ namespace Custom_Log_Parser.core
                 Command = GetValueIfExists(matches, 1);
                 CommandType = GetValueIfExists(matches, 2);
             }
+            else if(Content.Contains("Creating a signature for"))
+            {
+                Type += "_C";
+                matches = regexErrorSign.Match(Content);
+                Command = GetValueIfExists(matches, 1);
+                CommandType = GetValueIfExists(matches, 2);
+            }
             else
             {
                 Command = GetValueIfExists(matches, 4);
                 CommandType = GetValueIfExists(matches, 5).ToUpper();
-                RestContent = GetValueIfExists(matches, 6);
             }
         }
         private string GetValueIfExists(Match matches, int index)
